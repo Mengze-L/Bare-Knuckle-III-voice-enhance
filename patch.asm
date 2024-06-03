@@ -18,7 +18,7 @@ NEXT_VOICE_CMD:                       equ $00FFF794
         org     ORIGIN_VOICE_CONFLICTION
         jmp     CHECK_IF_SCREAM
 
-; Ehance: ---------------------------------------------------------------
+; Enhance: ---------------------------------------------------------------
         org     $2EE600
 CHECK_IF_SCREAM
         cmpi.b  #$33,D0
@@ -32,7 +32,8 @@ CHECK_IF_SCREAM
         bra.w   COMPARE_VOICE_LEVEL
 CHECK_IF_DELAY
         tst.l   (NEXT_VOICE_CMD)
-        beq     DELAY_SCREAM
+        beq     CHECK_DELAY_COUNT
+        and.l   #$00FFFFFF,D0
 
 COMPARE_VOICE_LEVEL
         swap    D0
@@ -40,7 +41,23 @@ COMPARE_VOICE_LEVEL
         bcs.w   GOTO_ORIGIN_CLEAN
         jmp     ORIGIN_VOICE_OVERWRITE
 
-DELAY_SCREAM
+CHECK_DELAY_COUNT
+        move.l  D1,-(SP)
+        move.l  D0,D1
+        and.l   #$FF000000,D1
+        swap    D1
+        addi.w  #$0100,D1               ; delay step
+        cmpi.w  #$0C00,D1               ; max delay count
+        bge     MAX_DELAY_COUNT
+        swap    D1
+        and.l   #$00FFFFFF,D0
+        or.l    D1,D0
         move.l  D0,(NEXT_VOICE_CMD)
+        move.l  (SP)+,D1
 GOTO_ORIGIN_CLEAN
         jmp     ORIGIN_CLEAN
+
+MAX_DELAY_COUNT
+        move.l  (SP)+,D1
+        and.l   #$00FFFFFF,D0
+        bra.w   COMPARE_VOICE_LEVEL
