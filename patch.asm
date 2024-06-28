@@ -10,7 +10,7 @@ ORIGIN_RESET_DELAY_COUNTER            set $000041FC
 
 ; Constants: -----------------------------------------------------------
 NEXT_VOICE_CMD:                       equ $00FFF794
-MAX_DELAY_COUNT:                      equ $A
+MAX_DELAY_COUNT:                      equ $9
 
 ; Overrides: -----------------------------------------------------------
         org     ORIGIN_RESET_DELAY_COUNTER
